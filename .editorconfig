@@ -1,0 +1,33 @@
+# top-most EditorConfig file
+root = true
+
+# Unix-style newlines with a newline ending every file
+[*]
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+charset = utf-8
+
+# 4 space indentation
+[*.py]
+indent_style = space
+indent_size = 4
+
+[*.lua]
+indent_style = space
+indent_size = 4
+
+[*.sh]
+indent_style = space
+indent_size = 4
+
+shell_variant      = bash
+binary_next_line   = true
+switch_case_indent = true
+space_redirects    = true
+keep_padding       = true
+function_next_line = false
+
+# Ignore the entire "third_party" directory.
+[third_party/**]
+ignore = true
