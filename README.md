@@ -27,5 +27,6 @@ functions.
 
 ### Key Mappings:
 
-Optional key mappings are provided to quickly encrypt (<leader>ce) and
-decrypt (<leader>cd) the buffer content.
+Optional key mappings are provided to quickly encrypt (`<leader>ce`) and
+decrypt (`<leader>cd`) the buffer content.
+
