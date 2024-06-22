@@ -1,6 +1,6 @@
 local M = {}
 
--- Function to encrypt buffer content using ccrypt with a password
+-- Function to encrypt buffer content using "ccrypt" with a password
 M.encrypt_buffer = function()
     local password = vim.fn.inputsecret("Enter encryption password: ")
     if password == "" then
@@ -24,7 +24,7 @@ M.encrypt_buffer = function()
     os.remove(temp_file)
 end
 
--- Function to decrypt buffer content using ccrypt with a password
+-- Function to decrypt buffer content using "ccrypt" with a password
 M.decrypt_buffer = function()
     local password = vim.fn.inputsecret("Enter decryption password: ")
     if password == "" then
