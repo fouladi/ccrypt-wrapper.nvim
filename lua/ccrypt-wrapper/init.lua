@@ -47,8 +47,8 @@ end
 
 -- Setup function to define commands and key mappings
 M.setup = function()
-	vim.api.nvim_command('command! Encrypt lua require("ccrypt_plugin").encrypt_buffer()')
-	vim.api.nvim_command('command! Decrypt lua require("ccrypt_plugin").decrypt_buffer()')
+	vim.api.nvim_command('command! Encrypt lua require("ccrypt-wrapper").encrypt_buffer()')
+	vim.api.nvim_command('command! Decrypt lua require("ccrypt-wrapper").decrypt_buffer()')
 	vim.api.nvim_set_keymap("n", "<leader>ce", ":Encrypt<CR>", { noremap = true, silent = true })
 	vim.api.nvim_set_keymap("n", "<leader>cd", ":Decrypt<CR>", { noremap = true, silent = true })
 end
