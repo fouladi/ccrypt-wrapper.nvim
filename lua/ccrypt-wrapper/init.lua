@@ -1,7 +1,28 @@
 local M = {}
 
+-- Function to check if ccrypt is installed
+local function is_ccrypt_installed()
+    local handle = io.popen("command -v ccrypt")
+    if handle == nil then
+        return false
+    end
+
+    local result = handle:read("*a")
+    handle:close()
+
+    if result == nil then
+        return false
+    end
+
+    return result ~= ""
+end
+
 -- Function to encrypt buffer content using "ccrypt" with a password
 M.encrypt_buffer = function()
+    if not is_ccrypt_installed() then
+        print("Error: ccrypt is not installed.")
+        return
+    end
     local password = vim.fn.inputsecret("Enter encryption password: ")
     if password == "" then
         print("Encryption aborted: No password provided.")
@@ -26,6 +47,10 @@ end
 
 -- Function to decrypt buffer content using "ccrypt" with a password
 M.decrypt_buffer = function()
+    if not is_ccrypt_installed() then
+        print("Error: ccrypt is not installed.")
+        return
+    end
     local password = vim.fn.inputsecret("Enter decryption password: ")
     if password == "" then
         print("Decryption aborted: No password provided.")
