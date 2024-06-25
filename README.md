@@ -33,6 +33,13 @@ After setup, the following commands will be automatically applied.
 Custom commands `:Encrypt` and `:Decrypt` are defined to call these
 functions.
 
+If you have not installed `ccrypt`, you will receive this error message
+when you call up the above functions:
+
+```
+Error: ccrypt is not installed.
+```
+
 ### Key Mappings:
 
 Optional key mappings are provided to quickly encrypt (`<leader>ce`) and
