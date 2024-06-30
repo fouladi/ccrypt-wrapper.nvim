@@ -1,7 +1,11 @@
 # ccrypt-wrapper.nvim
 
-A Neovim plugin to encrypt and decrypt buffers with `ccrypt`. It is like
-*AES* and is based on the *Rijndael* cypher, and uses a 256-bit block size.
+A Neovim plugin to encrypt and decrypt buffers with `ccrypt`.
+
+![alt text](doc/images/ccrypt-wrapper.gif)
+
+*ccrypt* is like *AES* and is based on the *Rijndael* cypher, and uses a
+256-bit block size:
 
 * Project page: [ccrypt](https://ccrypt.sourceforge.net)
 
