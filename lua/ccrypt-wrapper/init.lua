@@ -24,26 +24,47 @@ M.encrypt_buffer = function()
         return
     end
 
-    local password = vim.fn.inputsecret("Enter encryption password: ")
-    if password == "" then
-        print("Encryption aborted: No password provided.")
+    -- Prompt for password twice
+    local password1 = vim.fn.inputsecret("Enter encryption password: ")
+    local password2 = vim.fn.inputsecret("Repeat encryption password: ")
+
+    if password1 == "" or password2 == "" then
+        print("Encryption aborted: Password cannot be empty.")
         return
     end
 
-    local temp_file = vim.fn.tempname()
-    vim.api.nvim_command("write! " .. temp_file)
-    vim.api.nvim_command(
-        "silent !echo " .. vim.fn.shellescape(password) .. " | ccrypt -e -K - " .. vim.fn.shellescape(temp_file)
+    if password1 ~= password2 then
+        print("Encryption aborted: Passwords do not match.")
+        return
+    end
+
+    -- Save current buffer
+    vim.cmd("write")
+
+    -- Get full path and output path
+    local original_path = vim.api.nvim_buf_get_name(0)
+    if original_path == "" then
+        print("Encryption aborted: Buffer has no name. Save it first.")
+        return
+    end
+
+    local cp_path = original_path .. ".cp"
+
+    -- Run ccrypt with -o for output file
+    local command = string.format(
+        "echo %s | ccrypt -e -K - -o %s %s",
+        vim.fn.shellescape(password1),
+        vim.fn.shellescape(cp_path),
+        vim.fn.shellescape(original_path)
     )
-    if vim.fn.filereadable(temp_file .. ".cpt") == 1 then
-        vim.api.nvim_command("silent edit! " .. temp_file .. ".cpt")
-        vim.api.nvim_command(
-            "silent !mv " .. vim.fn.shellescape(temp_file .. ".cpt") .. " " .. vim.fn.shellescape(temp_file)
-        )
+    local result = os.execute(command)
+
+    if result == 0 then
+        print("Encrypted successfully to: " .. cp_path)
+        vim.cmd("edit " .. cp_path)
     else
         print("Encryption failed.")
     end
-    os.remove(temp_file)
 end
 
 -- Function to decrypt buffer content using "ccrypt" with a password
@@ -53,23 +74,39 @@ M.decrypt_buffer = function()
         return
     end
 
+    -- Get password
     local password = vim.fn.inputsecret("Enter decryption password: ")
     if password == "" then
         print("Decryption aborted: No password provided.")
         return
     end
 
-    local temp_file = vim.fn.tempname()
-    vim.api.nvim_command("write! " .. temp_file)
-    vim.api.nvim_command(
-        "silent !echo " .. vim.fn.shellescape(password) .. " | ccrypt -d -K - " .. vim.fn.shellescape(temp_file)
+    -- Save current buffer
+    vim.cmd("write")
+
+    local encrypted_path = vim.api.nvim_buf_get_name(0)
+    if encrypted_path == "" or not encrypted_path:match("%.cp$") then
+        print("File does not look like a '.cp' encrypted file.")
+        return
+    end
+
+    local decrypted_path = encrypted_path:gsub("%.cp$", "")
+
+    -- Run ccrypt to decrypt to original name
+    local command = string.format(
+        "echo %s | ccrypt -d -K - -o %s %s",
+        vim.fn.shellescape(password),
+        vim.fn.shellescape(decrypted_path),
+        vim.fn.shellescape(encrypted_path)
     )
-    if vim.fn.filereadable(temp_file) == 1 then
-        vim.api.nvim_command("silent edit! " .. temp_file)
+    local result = os.execute(command)
+
+    if result == 0 then
+        print("Decrypted to: " .. decrypted_path)
+        vim.cmd("edit " .. decrypted_path)
     else
         print("Decryption failed.")
     end
-    os.remove(temp_file)
 end
 
 -- Setup function to define commands and key mappings
