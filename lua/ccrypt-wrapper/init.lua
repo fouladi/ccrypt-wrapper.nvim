@@ -45,6 +45,19 @@ M.encrypt_buffer = function()
         return
     end
 
+    local encrypted_path = original_path .. ".cpt"
+
+    -- Ask if .cpt file already exists
+    if vim.fn.filereadable(encrypted_path) == 1 then
+        local answer = vim.fn.input("File '" .. encrypted_path .. "' already exists. Overwrite? (y/N): ")
+        if answer:lower() ~= "y" then
+            print("Encryption cancelled by user.")
+            return
+        end
+        os.remove(encrypted_path) -- remove before encrypting
+    end
+
+    -- Ensure file has content
     local fcheck = io.open(original_path, "rb")
     if not fcheck then
         print("Encryption aborted: Cannot open file '" .. original_path .. "'.")
@@ -58,7 +71,7 @@ M.encrypt_buffer = function()
         return
     end
 
-    -- Write password to temp file
+    -- Create password file
     local passfile = vim.fn.tempname()
     local f = io.open(passfile, "w")
     if not f then
@@ -69,7 +82,7 @@ M.encrypt_buffer = function()
     f:close()
     os.execute("chmod 600 " .. passfile)
 
-    -- Encrypt in-place (ccrypt will append .cpt)
+    -- Encrypt using ccrypt
     local encrypt_cmd =
         string.format("ccrypt -e -k %s %s", vim.fn.shellescape(passfile), vim.fn.shellescape(original_path))
     local handle = io.popen(encrypt_cmd .. " 2>&1")
@@ -77,10 +90,10 @@ M.encrypt_buffer = function()
     local ok, _, exitcode = handle:close()
     os.remove(passfile)
 
-    local encrypted_file = original_path .. ".cpt"
-    if ok and vim.fn.filereadable(encrypted_file) == 1 then
-        print("✅ Encrypted successfully: " .. encrypted_file)
-        vim.cmd("edit " .. encrypted_file)
+    if ok and vim.fn.filereadable(encrypted_path) == 1 then
+        os.remove(original_path) -- 🔥 Delete source after success
+        print("✅ Encrypted successfully to: " .. encrypted_path)
+        vim.cmd("edit " .. encrypted_path)
     else
         print("❌ Encryption failed. Exit code: " .. tostring(exitcode))
         print("Output:\n" .. output)
