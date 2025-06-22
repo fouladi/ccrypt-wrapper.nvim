@@ -37,8 +37,8 @@ M.encrypt_buffer = function()
         return
     end
 
-    -- Save buffer to file forcibly
-    vim.api.nvim_command("write!")
+    -- Save current buffer
+    vim.cmd("write!")
 
     local original_path = vim.api.nvim_buf_get_name(0)
     if original_path == "" then
@@ -46,7 +46,7 @@ M.encrypt_buffer = function()
         return
     end
 
-    -- Check file content
+    -- Verify file exists and is not empty
     local fcheck = io.open(original_path, "rb")
     if not fcheck then
         print("Encryption aborted: Cannot open file '" .. original_path .. "'.")
@@ -62,20 +62,29 @@ M.encrypt_buffer = function()
 
     local cp_path = original_path .. ".cp"
 
-    -- Create secure password file
+    -- Copy original file to target
+    local cp_cmd = string.format("cp %s %s", vim.fn.shellescape(original_path), vim.fn.shellescape(cp_path))
+    local cp_result = os.execute(cp_cmd)
+    if cp_result ~= 0 then
+        print("Encryption aborted: Failed to copy file to " .. cp_path)
+        return
+    end
+
+    -- Create password file
     local passfile = vim.fn.tempname()
     local f = io.open(passfile, "w")
     if not f then
-        print("Encryption aborted: Cannot write temp password file.")
+        print("Encryption aborted: Cannot create temp password file.")
         return
     end
     f:write(password1, "\n")
     f:close()
     os.execute("chmod 600 " .. passfile)
 
-    -- Run ccrypt
-    local cmd = string.format("ccrypt -e -k %s -o %s %s", passfile, cp_path, original_path)
-    local handle = io.popen(cmd .. " 2>&1")
+    -- Encrypt copied file in-place
+    local encrypt_cmd = string.format("ccrypt -e -k %s %s", vim.fn.shellescape(passfile), vim.fn.shellescape(cp_path))
+
+    local handle = io.popen(encrypt_cmd .. " 2>&1")
     local output = handle:read("*a")
     local ok, _, exitcode = handle:close()
     os.remove(passfile)
