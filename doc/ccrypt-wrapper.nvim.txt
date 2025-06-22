@@ -1,4 +1,4 @@
-*ccrypt-wrapper.nvim.txt*                                          DESCRIPTION
+*ccrypt-wrapper.nvim.txt*                For                 Last change: 2025
 
 ==============================================================================
 Table of Contents                      *ccrypt-wrapper.nvim-table-of-contents*
@@ -51,8 +51,49 @@ After setup, the following commands will be automatically applied.
 
 COMMANDS: ~
 
-Custom commands `:Encrypt`, `:Decrypt`, `:EncryptFile` and
-`:DecryptFile` are defined to call these functions.
+The commands `:Encrypt` and `:Decrypt` are defined to call `ccrypt` for
+encrypting and decrypting the buffer.
+
+The commands `:EncryptFile` and `:DecryptFile` call `ccrypt` to encrypt and
+decrypting whole file.
+
+
+ENCRYPT
+
+Encrypts buffer content using `ccrypt` with a password.
+
+
+DECRYPT
+
+Decrypts buffer content using `ccrypt` with a password.
+
+
+ENCRYPTFILE
+
+Encrypts the currently open buffer file using `ccrypt`.
+
+1. Prompts the user to enter and confirm an encryption password.
+2. Checks if the buffer is named and non-empty.
+3. Writes the buffer to disk.
+4. Prompts for confirmation if the target file (`<file>.cpt`) already exists.
+5. Uses `ccrypt` to encrypt the file, which automatically appends `.cpt`.
+6. Deletes the original unencrypted file after successful encryption.
+7. Opens the encrypted file in the current buffer.
+
+
+DECRYPTFILE
+
+Decrypts the currently open `.cpt` file using `ccrypt`.
+
+1. Prompts the user to enter the decryption password.
+2. Validates that the current file has a `.cpt` extension.
+3. Writes the buffer to disk (to ensure content is current).
+4. Uses `ccrypt` to decrypt the file in-place.
+5. Automatically opens the decrypted file (with `.cpt` removed) in
+the buffer.
+
+
+CCRYPT ~
 
 If you have not installed `ccrypt`, you will receive this error message when
 you call up the above functions:
