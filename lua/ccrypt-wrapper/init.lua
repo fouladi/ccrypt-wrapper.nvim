@@ -24,12 +24,11 @@ M.encrypt_buffer = function()
         return
     end
 
-    -- Prompt for password twice
     local password1 = vim.fn.inputsecret("Enter encryption password: ")
     local password2 = vim.fn.inputsecret("Repeat encryption password: ")
 
     if password1 == "" or password2 == "" then
-        print("Encryption aborted: Password cannot be empty.")
+        print("Encryption aborted: Empty password.")
         return
     end
 
@@ -38,32 +37,42 @@ M.encrypt_buffer = function()
         return
     end
 
-    -- Save current buffer
-    vim.cmd("write")
+    vim.cmd("write") -- save current buffer
 
-    -- Get full path and output path
     local original_path = vim.api.nvim_buf_get_name(0)
     if original_path == "" then
-        print("Encryption aborted: Buffer has no name. Save it first.")
+        print("Encryption aborted: Buffer has no name.")
         return
     end
 
     local cp_path = original_path .. ".cp"
 
-    -- Encrypt using password file
-    local command = string.format(
-        "ccrypt -e -k %s -o %s %s",
-        vim.fn.shellescape(passfile),
-        vim.fn.shellescape(cp_path),
-        vim.fn.shellescape(original_path)
-    )
-    local result = os.execute(command)
+    -- Write password to temp file
+    local passfile = vim.fn.tempname()
+    local f = io.open(passfile, "w")
+    if not f then
+        print("Encryption aborted: Cannot write temp password file.")
+        return
+    end
+    f:write(password1, "\n")
+    f:close()
+    os.execute("chmod 600 " .. passfile) -- secure file
 
-    if result == 0 then
-        print("Encrypted successfully to: " .. cp_path)
+    -- Build the ccrypt command
+    local cmd = string.format("ccrypt -e -k %s -o %s %s", passfile, cp_path, original_path)
+
+    -- Run and capture output
+    local handle = io.popen(cmd .. " 2>&1")
+    local output = handle:read("*a")
+    local ok, _, exitcode = handle:close()
+    os.remove(passfile)
+
+    if ok then
+        print("✅ Encrypted successfully to: " .. cp_path)
         vim.cmd("edit " .. cp_path)
     else
-        print("Encryption failed.")
+        print("❌ Encryption failed. Exit code: " .. tostring(exitcode))
+        print("Output:\n" .. output)
     end
 end
 
