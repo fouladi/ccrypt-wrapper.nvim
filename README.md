@@ -34,8 +34,11 @@ After setup, the following commands will be automatically applied.
 
 ### Commands:
 
-Custom commands `:Encrypt` and `:Decrypt` are defined to call these
-functions.
+The commands `:Encrypt` and `:Decrypt` are defined to call `ccrypt` for
+encrypting and decrypting the buffer.
+
+The commands `:EncryptFile` and `:DecryptFile` call `ccrypt` to encrypt
+and decrypting whole files.
 
 If you have not installed `ccrypt`, you will receive this error message
 when you call up the above functions:
@@ -43,8 +46,3 @@ when you call up the above functions:
 ```
 Error: ccrypt is not installed.
 ```
-
-### Key Mappings:
-
-Optional key mappings are provided to quickly encrypt (`<leader>ce`) and
-decrypt (`<leader>cd`) the buffer content.

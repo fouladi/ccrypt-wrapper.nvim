@@ -51,7 +51,8 @@ After setup, the following commands will be automatically applied.
 
 COMMANDS: ~
 
-Custom commands `:Encrypt` and `:Decrypt` are defined to call these functions.
+Custom commands `:Encrypt`, `:Decrypt`, `:EncryptFile` and
+`:DecryptFile` are defined to call these functions.
 
 If you have not installed `ccrypt`, you will receive this error message when
 you call up the above functions:
@@ -59,12 +60,6 @@ you call up the above functions:
 >
     Error: ccrypt is not installed.
 <
-
-
-KEY MAPPINGS: ~
-
-Optional key mappings are provided to quickly encrypt (`<leader>ce`) and
-decrypt (`<leader>cd`) the buffer content.
 
 ==============================================================================
 5. Links                                           *ccrypt-wrapper.nvim-links*
