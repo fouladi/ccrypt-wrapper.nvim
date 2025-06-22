@@ -50,10 +50,10 @@ M.encrypt_buffer = function()
 
     local cp_path = original_path .. ".cp"
 
-    -- Run ccrypt with -o for output file
+    -- Encrypt using password file
     local command = string.format(
-        "echo %s | ccrypt -e -K - -o %s %s",
-        vim.fn.shellescape(password1),
+        "ccrypt -e -k %s -o %s %s",
+        vim.fn.shellescape(passfile),
         vim.fn.shellescape(cp_path),
         vim.fn.shellescape(original_path)
     )
